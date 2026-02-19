@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import ChapterPage from './components/ChapterPage';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [stats, setStats] = useState({ members: 0, events: 0, workshops: 0 });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedChapter, setSelectedChapter] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,6 +61,57 @@ function App() {
   const scrollToSection = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const chapters = [
+    {
+      id: 'computational-intelligence',
+      name: 'IEEE Computational Intelligence Society',
+      icon: '🧠',
+      description: 'Advancing biologically and linguistically motivated computational paradigms including neural networks, fuzzy systems, and evolutionary computation.',
+      domain: 'AI & Machine Learning',
+      tagline: 'Intelligent Systems for Tomorrow',
+      techAreas: ['Neural Networks', 'Fuzzy Logic', 'Evolutionary Computing', 'Deep Learning', 'Pattern Recognition']
+    },
+    {
+      id: 'circuits-systems',
+      name: 'IEEE Circuits and Systems Society',
+      icon: '⚡',
+      description: 'Promoting advancement in theory, analysis, design, and implementation of circuits and systems for electronic applications.',
+      domain: 'Electronics & Hardware',
+      tagline: 'Building Tomorrow\'s Electronics',
+      techAreas: ['VLSI Design', 'Analog Circuits', 'Digital Systems', 'Signal Processing', 'PCB Design']
+    },
+    {
+      id: 'systems-cybernetics',
+      name: 'IEEE Systems, Man, and Cybernetics Society',
+      icon: '🤖',
+      description: 'Focusing on systems involving humans, machines, and organizations through cybernetics and human-machine interaction.',
+      domain: 'Human-Machine Systems',
+      tagline: 'Bridging Humans and Technology',
+      techAreas: ['Robotics', 'Control Systems', 'Human-Computer Interaction', 'Cybernetics', 'Automation']
+    },
+    {
+      id: 'information-theory',
+      name: 'IEEE Information Theory Chapter',
+      icon: '📊',
+      description: 'Exploring mathematical foundations of information processing, coding theory, cryptography, and data compression.',
+      domain: 'Information Science',
+      tagline: 'Securing Information Flow',
+      techAreas: ['Cryptography', 'Data Compression', 'Error Correction', 'Information Security', 'Coding Theory']
+    }
+  ];
+
+  const handleChapterClick = (chapter) => {
+    setSelectedChapter(chapter);
+  };
+
+  const handleBackToChapters = () => {
+    setSelectedChapter(null);
+  };
+
+  if (selectedChapter) {
+    return <ChapterPage chapter={selectedChapter} onBack={handleBackToChapters} />;
+  }
 
   return (
     <div className="App">
@@ -124,26 +177,14 @@ function App() {
         <div className="container">
           <h2>Our Chapters</h2>
           <div className="chapters-grid">
-            <div className="chapter-card">
-              <div className="chapter-icon">🧠</div>
-              <h3>IEEE Computational Intelligence Society</h3>
-              <p>Advancing biologically and linguistically motivated computational paradigms including neural networks, fuzzy systems, and evolutionary computation.</p>
-            </div>
-            <div className="chapter-card">
-              <div className="chapter-icon">⚡</div>
-              <h3>IEEE Circuits and Systems Society</h3>
-              <p>Promoting advancement in theory, analysis, design, and implementation of circuits and systems for electronic applications.</p>
-            </div>
-            <div className="chapter-card">
-              <div className="chapter-icon">🤖</div>
-              <h3>IEEE Systems, Man, and Cybernetics Society</h3>
-              <p>Focusing on systems involving humans, machines, and organizations through cybernetics and human-machine interaction.</p>
-            </div>
-            <div className="chapter-card">
-              <div className="chapter-icon">📊</div>
-              <h3>IEEE Information Theory Chapter</h3>
-              <p>Exploring mathematical foundations of information processing, coding theory, cryptography, and data compression.</p>
-            </div>
+            {chapters.map((chapter) => (
+              <div key={chapter.id} className="chapter-card" onClick={() => handleChapterClick(chapter)}>
+                <div className="chapter-icon">{chapter.icon}</div>
+                <h3>{chapter.name}</h3>
+                <p>{chapter.description}</p>
+                <div className="chapter-cta">Learn More →</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
