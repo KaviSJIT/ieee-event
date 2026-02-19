@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import ChapterDetails from './components/ChapterDetails';
 import './App.css';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [stats, setStats] = useState({ members: 0, events: 0, workshops: 0 });
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [selectedChapter, setSelectedChapter] = useState(null);
+  const [showFAQ, setShowFAQ] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const chapters = [
+    { id: 'computational-intelligence', name: 'IEEE Computational Intelligence Society', icon: '🧠', category: 'ai' },
+    { id: 'circuits-systems', name: 'IEEE Circuits and Systems Society', icon: '⚡', category: 'hardware' },
+    { id: 'systems-cybernetics', name: 'IEEE Systems, Man, and Cybernetics Society', icon: '🤖', category: 'systems' },
+    { id: 'information-theory', name: 'IEEE Information Theory Chapter', icon: '📊', category: 'theory' }
+  ];
+
+  const filteredChapters = activeFilter === 'all' ? chapters : chapters.filter(ch => ch.category === activeFilter);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,19 +80,17 @@ function App() {
             <div className="logo-placeholder">IEEE</div>
             IEEE Student Branch
           </div>
-          <button 
-            className="hamburger" 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
+          <button className="hamburger" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             ☰
           </button>
-          <ul className={`nav-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-            <li><button onClick={() => { scrollToSection('home'); setIsMobileMenuOpen(false); }}>Home</button></li>
-            <li><button onClick={() => { scrollToSection('about'); setIsMobileMenuOpen(false); }}>About IEEE</button></li>
-            <li><button onClick={() => { scrollToSection('chapters'); setIsMobileMenuOpen(false); }}>Chapters</button></li>
-            <li><button onClick={() => { scrollToSection('activities'); setIsMobileMenuOpen(false); }}>Activities</button></li>
-            <li><button onClick={() => { scrollToSection('contact'); setIsMobileMenuOpen(false); }}>Contact</button></li>
+          <ul className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
+            <li><button onClick={() => { scrollToSection('home'); setMobileMenuOpen(false); }}>Home</button></li>
+            <li><button onClick={() => { scrollToSection('about'); setMobileMenuOpen(false); }}>About IEEE</button></li>
+            <li><button onClick={() => { scrollToSection('chapters'); setMobileMenuOpen(false); }}>Chapters</button></li>
+            <li><button onClick={() => { scrollToSection('activities'); setMobileMenuOpen(false); }}>Activities</button></li>
+            <li><button onClick={() => { scrollToSection('benefits'); setMobileMenuOpen(false); }}>Benefits</button></li>
+            <li><button onClick={() => { setShowFAQ(true); setMobileMenuOpen(false); }}>FAQ</button></li>
+            <li><button onClick={() => { scrollToSection('contact'); setMobileMenuOpen(false); }}>Contact</button></li>
           </ul>
         </div>
       </nav>
@@ -123,27 +133,25 @@ function App() {
       <section id="chapters" className="section alt">
         <div className="container">
           <h2>Our Chapters</h2>
+          <div className="chapter-filters">
+            <button className={activeFilter === 'all' ? 'active' : ''} onClick={() => setActiveFilter('all')}>All</button>
+            <button className={activeFilter === 'ai' ? 'active' : ''} onClick={() => setActiveFilter('ai')}>AI/ML</button>
+            <button className={activeFilter === 'hardware' ? 'active' : ''} onClick={() => setActiveFilter('hardware')}>Hardware</button>
+            <button className={activeFilter === 'systems' ? 'active' : ''} onClick={() => setActiveFilter('systems')}>Systems</button>
+            <button className={activeFilter === 'theory' ? 'active' : ''} onClick={() => setActiveFilter('theory')}>Theory</button>
+          </div>
           <div className="chapters-grid">
-            <div className="chapter-card">
-              <div className="chapter-icon">🧠</div>
-              <h3>IEEE Computational Intelligence Society</h3>
-              <p>Advancing biologically and linguistically motivated computational paradigms including neural networks, fuzzy systems, and evolutionary computation.</p>
-            </div>
-            <div className="chapter-card">
-              <div className="chapter-icon">⚡</div>
-              <h3>IEEE Circuits and Systems Society</h3>
-              <p>Promoting advancement in theory, analysis, design, and implementation of circuits and systems for electronic applications.</p>
-            </div>
-            <div className="chapter-card">
-              <div className="chapter-icon">🤖</div>
-              <h3>IEEE Systems, Man, and Cybernetics Society</h3>
-              <p>Focusing on systems involving humans, machines, and organizations through cybernetics and human-machine interaction.</p>
-            </div>
-            <div className="chapter-card">
-              <div className="chapter-icon">📊</div>
-              <h3>IEEE Information Theory Chapter</h3>
-              <p>Exploring mathematical foundations of information processing, coding theory, cryptography, and data compression.</p>
-            </div>
+            {filteredChapters.map((chapter) => (
+              <div key={chapter.id} className="chapter-card" onClick={() => setSelectedChapter(chapter.id)}>
+                <div className="chapter-icon">{chapter.icon}</div>
+                <h3>{chapter.name}</h3>
+                <p>{chapter.id === 'computational-intelligence' ? 'Advancing biologically and linguistically motivated computational paradigms including neural networks, fuzzy systems, and evolutionary computation.' :
+                   chapter.id === 'circuits-systems' ? 'Promoting advancement in theory, analysis, design, and implementation of circuits and systems for electronic applications.' :
+                   chapter.id === 'systems-cybernetics' ? 'Focusing on systems involving humans, machines, and organizations through cybernetics and human-machine interaction.' :
+                   'Exploring mathematical foundations of information processing, coding theory, cryptography, and data compression.'}</p>
+                <button className="learn-more-btn">Learn More</button>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -190,6 +198,44 @@ function App() {
         </div>
       </section>
 
+      <section id="benefits" className="section">
+        <div className="container">
+          <h2>IEEE Membership Benefits</h2>
+          <div className="benefits-grid">
+            <div className="benefit-card">
+              <div className="benefit-icon">📚</div>
+              <h3>Access to IEEE Xplore</h3>
+              <p>World's largest technical literature database with over 5 million documents</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">🌐</div>
+              <h3>Global Network</h3>
+              <p>Connect with 400,000+ members across 160+ countries worldwide</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">🏆</div>
+              <h3>Career Development</h3>
+              <p>Professional development courses, certifications, and career resources</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">📖</div>
+              <h3>Publications</h3>
+              <p>Access to IEEE magazines, journals, and conference proceedings</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">🎯</div>
+              <h3>Standards Access</h3>
+              <p>Discounted access to IEEE standards and participation in development</p>
+            </div>
+            <div className="benefit-card">
+              <div className="benefit-icon">💼</div>
+              <h3>Job Board</h3>
+              <p>Exclusive access to IEEE job board with technical career opportunities</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="contact" className="section">
         <div className="container">
           <h2>Get In Touch</h2>
@@ -199,17 +245,34 @@ function App() {
               <p>📧 ieee@university.edu</p>
               <p>📞 +1 (555) 123-4567</p>
               <p>📍 Engineering Building, Room 201</p>
-              <p>🌐 Follow us on social media for updates</p>
+              <div className="social-media">
+                <h4>Follow Us</h4>
+                <div className="social-icons">
+                  <a href="#" className="social-icon">📘</a>
+                  <a href="#" className="social-icon">🐦</a>
+                  <a href="#" className="social-icon">📷</a>
+                  <a href="#" className="social-icon">💼</a>
+                </div>
+              </div>
             </div>
             <div className="contact-form">
               <h3>Send us a message</h3>
-              <form>
+              <form onSubmit={(e) => { e.preventDefault(); alert('Message sent!'); }}>
                 <input type="text" placeholder="Your Name" required />
                 <input type="email" placeholder="Your Email" required />
                 <textarea placeholder="Your Message" rows="4" required></textarea>
                 <button type="submit">Send Message</button>
               </form>
             </div>
+          </div>
+          
+          <div className="newsletter-section">
+            <h3>Subscribe to Our Newsletter</h3>
+            <p>Stay updated with the latest IEEE events, workshops, and opportunities</p>
+            <form className="newsletter-form" onSubmit={(e) => { e.preventDefault(); alert('Subscribed!'); }}>
+              <input type="email" placeholder="Enter your email address" required />
+              <button type="submit">Subscribe</button>
+            </form>
           </div>
         </div>
       </section>
@@ -227,6 +290,7 @@ function App() {
                 <li><button onClick={() => scrollToSection('about')}>About</button></li>
                 <li><button onClick={() => scrollToSection('chapters')}>Chapters</button></li>
                 <li><button onClick={() => scrollToSection('activities')}>Activities</button></li>
+                <li><button onClick={() => scrollToSection('benefits')}>Benefits</button></li>
               </ul>
             </div>
             <div className="footer-section">
@@ -239,6 +303,40 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {selectedChapter && (
+        <ChapterDetails 
+          chapter={selectedChapter} 
+          onClose={() => setSelectedChapter(null)} 
+        />
+      )}
+
+      {showFAQ && (
+        <div className="modal-overlay" onClick={() => setShowFAQ(false)}>
+          <div className="faq-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setShowFAQ(false)}>×</button>
+            <h2>Frequently Asked Questions</h2>
+            <div className="faq-content">
+              <div className="faq-item">
+                <h3>How do I join IEEE?</h3>
+                <p>Visit ieee.org and create an account. Student membership is available at discounted rates.</p>
+              </div>
+              <div className="faq-item">
+                <h3>What are the membership benefits?</h3>
+                <p>Access to IEEE Xplore, networking opportunities, career resources, and technical publications.</p>
+              </div>
+              <div className="faq-item">
+                <h3>How can I participate in chapter activities?</h3>
+                <p>Follow our social media, subscribe to newsletters, and attend our regular meetings and events.</p>
+              </div>
+              <div className="faq-item">
+                <h3>Are there leadership opportunities?</h3>
+                <p>Yes! We regularly elect student representatives and welcome volunteers for various roles.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
